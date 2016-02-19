@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GarageOpener.Classes;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -14,10 +15,22 @@ namespace GarageOpener.Controllers
     {
         public ActionResult  Alive()
         {
-            return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel());
+            return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel(""));
         }
 
-
+        [HttpPost]
+        public ActionResult CheckIP(LoginModel model)
+        {
+            if (model.User.ToLower()=="stoichincatalin@gmail.com" && model.Parola.ToLower()=="mycoolstuff1982")
+            {
+                return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel(getSetting("RaspiIP").Replace("http://","").Replace(":","")));
+            }
+            else
+            {
+                return View("~/views/garageopenner/hacker.cshtml", "");
+            }
+            
+        }
 
         public bool UpdateazaAdresa(string ip)
         {
