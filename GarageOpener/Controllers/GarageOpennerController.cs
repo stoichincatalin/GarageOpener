@@ -13,7 +13,7 @@ namespace GarageOpener.Controllers
 {
     public class GarageOpennerController : Controller
     {
-        public ActionResult  Alive()
+        public ActionResult Alive()
         {
             return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel(""));
         }
@@ -21,15 +21,41 @@ namespace GarageOpener.Controllers
         [HttpPost]
         public ActionResult CheckIP(LoginModel model)
         {
-            if (model.User.ToLower()=="stoichincatalin@gmail.com" && model.Parola.ToLower()=="mycoolstuff1982")
+            if (model != null && model.User != null && model.Parola != null && model.User.ToLower() == "stoichincatalin@gmail.com" && model.Parola.ToLower() == "mycoolstuff1982")
             {
-                return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel(getSetting("RaspiIP").Replace("http://","").Replace(":","")));
+                return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel(getSetting("RaspiIP").Replace("http://", "").Replace(":", "")));
             }
             else
             {
-                return View("~/views/garageopenner/hacker.cshtml", "");
+                string ip = "";
+                try
+                {
+                    ip = GetUserIP();
+                    saveHacker(ip,model);
+                }
+                catch(Exception ex)
+                {
+                    ip = "exeption";
+                    if (ex != null)
+                    {
+
+                    }
+                }
+                return View("~/views/garageopenner/hacker.cshtml", new GarageOpener.Classes.LoginModel(ip));
             }
-            
+
+        }
+
+        private string GetUserIP()
+        {
+            string ipList = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (!string.IsNullOrEmpty(ipList))
+            {
+                return ipList.Split(',')[0];
+            }
+
+            return Request.ServerVariables["REMOTE_ADDR"].ToString();
         }
 
         public bool UpdateazaAdresa(string ip)
@@ -50,21 +76,21 @@ namespace GarageOpener.Controllers
                     ipDatabase = getSetting("RaspiIP");
                     if (!ipDatabase.Contains(ipA.MapToIPv4().ToString()))
                     {
-                      returnValue = updateSetting("RaspiIP", ipA.MapToIPv4().ToString());
+                        returnValue = updateSetting("RaspiIP", ipA.MapToIPv4().ToString());
                         //Update Database IP
 
                     }
                 }
 
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 if (e != null)
                 {
-                   
+
                 }
             }
-        
+
             return returnValue;
         }
 
@@ -221,14 +247,15 @@ namespace GarageOpener.Controllers
                     returnValue = GetStatusRaspberry(value1);
                     if (returnValue.Valid)
                     {
-                        if (returnValue.StatusDoor == 0) {
+                        if (returnValue.StatusDoor == 0)
+                        {
                             //call close again
                             OverwriteDoor(value1);
                             System.Threading.Thread.Sleep(7000);
                             returnValue = GetStatusRaspberry(value1);
                         }
                     }
-                    
+
                 }
             }
             else
@@ -574,39 +601,66 @@ namespace GarageOpener.Controllers
             Guid temp = Guid.Empty;
             return Guid.TryParse(value, out temp);
         }
-    
 
 
-    private bool updateSetting(string settingName,string settingvalue)
-    {
+
+        private bool updateSetting(string settingName, string settingvalue)
+        {
             bool returnValue = false;
-        GarageOpener.Database.Setting  setting = new GarageOpener.Database.Setting();
-        GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
+            GarageOpener.Database.Setting setting = new GarageOpener.Database.Setting();
+            GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
 
             IQueryable<GarageOpener.Database.Setting> temp = from data in context.Settings
                                                              where data.Name.ToUpper() == settingName.ToUpper()
                                                              select data;
 
-        try
-        {
+            try
+            {
                 setting = temp.FirstOrDefault();
 
-            if (setting != null)
-            {
+                if (setting != null)
+                {
                     setting.Description = "http://" + settingvalue + ":";
                     context.SaveChanges();
                     returnValue = true;
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            if (ex.Message != null)
+            catch (Exception ex)
             {
+                if (ex.Message != null)
+                {
+                }
             }
+
+            return returnValue;
         }
 
-        return returnValue;
-    }
+        private bool saveHacker(string address, LoginModel model)
+        {
+            bool returnValue = false;
+            GarageOpener.Database.Hacker hacker = new GarageOpener.Database.Hacker();
+            GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
+
+            
+            try
+            {              
+                hacker.Address = address;
+                hacker.User = model.User;
+                hacker.Parola = model.Parola;
+                hacker.CreatedDate = DateTime.UtcNow;
+                context.Hackers.Add(hacker);
+                context.SaveChanges();
+                returnValue = true;
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message != null)
+                {
+                }
+            }
+
+            return returnValue;
+        }
     }
     #endregion
 

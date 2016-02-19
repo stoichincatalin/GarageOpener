@@ -188,6 +188,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GarageOpener.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Database\Hacker.cs">
+      <DependentUpon>GarageOpener.tt</DependentUpon>
+    </Compile>
     <Compile Include="Database\Session.cs">
       <DependentUpon>GarageOpener.tt</DependentUpon>
     </Compile>

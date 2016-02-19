@@ -28,5 +28,6 @@ namespace GarageOpener.Database
         public virtual DbSet<Setting> Settings { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<Session> Sessions { get; set; }
+        public virtual DbSet<Hacker> Hackers { get; set; }
     }
 }

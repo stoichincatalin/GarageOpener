@@ -99,6 +99,10 @@ namespace Helpers
             }
             catch (System.InvalidOperationException ex)
             {
+                if (ex != null)
+                {
+
+                }
                 // Bad XML Format, ignore error and just dont serialize
                 ReturnValue = (ObjectType)Activator.CreateInstance(typeof(ObjectType));
             }

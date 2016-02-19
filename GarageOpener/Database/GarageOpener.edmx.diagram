@@ -8,6 +8,7 @@
         <EntityTypeShape EntityType="DB_30349_garageModel.Setting" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_30349_garageModel.User" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DB_30349_garageModel.Session" Width="1.5" PointX="4.875" PointY="0.75" />
+        <EntityTypeShape EntityType="DB_30349_garageModel.Hacker" Width="1.5" PointX="7" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>
