@@ -59,6 +59,10 @@ namespace GarageOpener.Classes
             }
             catch (Exception ex)
             {
+                if (ex != null)
+                {
+
+                }
                 responseFromServer = "Server is not online.";
             }
             finally
@@ -102,6 +106,9 @@ namespace GarageOpener.Classes
             catch (Exception ex)
             {
               //  statusUpperID.Text = "Server is not online.";
+              if (ex !=null){
+
+                }
             }
             finally
             {
@@ -142,7 +149,11 @@ namespace GarageOpener.Classes
             }
             catch (Exception ex)
             {
-               // statusUpperID.Text = "Server is not online.";
+                if (ex != null)
+                {
+
+                }
+                // statusUpperID.Text = "Server is not online.";
             }
             finally
             {

@@ -1,13 +1,14 @@
 ﻿#region "Imports"
-using System;
+using System.Text;
 using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Xml.Serialization;
 using System.Xml;
-using System.Text;
+using Newtonsoft.Json;
+using System;
 #endregion
 
-[assembly:CLSCompliant(true)]
+[assembly: System.CLSCompliant(true)]
 namespace Helpers
 {
     /// <summary>
@@ -71,7 +72,7 @@ namespace Helpers
             MemoryStream MemoryStream = new MemoryStream();
             XmlSerializer XS = new XmlSerializer(ObjectToSerialize.GetType());
             XmlTextWriter TextWriter = new XmlTextWriter(MemoryStream, System.Text.Encoding.UTF8);
-            UTF8Encoding Encoding = new System.Text.UTF8Encoding();
+            System.Text.UTF8Encoding Encoding = new System.Text.UTF8Encoding();
             XS.Serialize(MemoryStream, ObjectToSerialize);
             MemoryStream = (MemoryStream)TextWriter.BaseStream;
             return Encoding.GetString(MemoryStream.ToArray());
@@ -90,7 +91,7 @@ namespace Helpers
 
             try
             {
-                UTF8Encoding Encoding = new UTF8Encoding();
+                System.Text.UTF8Encoding Encoding = new System.Text.UTF8Encoding();
                 byte[] ByteArray = (byte[])Encoding.GetBytes(Value);
                 MemoryStream MemoryStream = new MemoryStream(ByteArray);
                 XmlSerializer XS = new XmlSerializer(typeof(ObjectType));
@@ -151,6 +152,35 @@ namespace Helpers
                 // Convert
                 ResultBytes = Encoding.UTF8.GetBytes(SerializeHelper.SerializeJSON<ObjectType>(ObjectToConvert));
                 ReturnValue = new MemoryStream(ResultBytes);
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            // Return data
+            return ReturnValue;
+        }
+
+        /// <summary>
+        /// Used to convert Request.InputStream to an object - JsonConvert 
+        /// I.e. Request form submit to a JSON object
+        /// </summary>
+        /// <typeparam name="ObjectType"></typeparam>
+        /// <param name="StreamToConvert"></param>
+        /// <returns></returns>
+        /// <remarks></remarks>
+        public static ObjectType JSONStreamToObject<ObjectType>(System.IO.Stream StreamToConvert)
+        {
+            // Local variables
+            StreamReader Reader = default(StreamReader);
+            ObjectType ReturnValue = default(ObjectType);
+
+            try
+            {
+                // Convert
+                Reader = new StreamReader(StreamToConvert);
+                ReturnValue = JsonConvert.DeserializeObject<ObjectType>(Reader.ReadToEnd(), new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });
             }
             catch (Exception ex)
             {

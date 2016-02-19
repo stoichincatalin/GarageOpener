@@ -12,9 +12,61 @@ namespace GarageOpener.Controllers
 {
     public class GarageOpennerController : Controller
     {
-        public string Alive()
+        public ActionResult  Alive()
         {
-            return "Alive";
+            return View("~/views/garageopenner/ipaddress.cshtml", new GarageOpener.Classes.LoginModel());
+        }
+
+
+
+        public bool UpdateazaAdresa(string ip)
+        {
+            bool returnValue = false;
+            string ipDatabase = "";
+            GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
+            try
+            {
+                //string ip = GetPublicIP();
+
+                IPAddress ipA;
+                returnValue = IPAddress.TryParse(ip, out ipA);
+
+                if (returnValue)
+                {
+                    //Update IP Address
+                    ipDatabase = getSetting("RaspiIP");
+                    if (!ipDatabase.Contains(ipA.MapToIPv4().ToString()))
+                    {
+                      returnValue = updateSetting("RaspiIP", ipA.MapToIPv4().ToString());
+                        //Update Database IP
+
+                    }
+                }
+
+            }
+            catch(Exception e)
+            {
+                if (e != null)
+                {
+                   
+                }
+            }
+        
+            return returnValue;
+        }
+
+        public static string GetPublicIP()
+        {
+            string url = "http://checkip.dyndns.org";
+            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse resp = req.GetResponse();
+            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+            string response = sr.ReadToEnd().Trim();
+            string[] a = response.Split(':');
+            string a2 = a[1].Substring(1);
+            string[] a3 = a2.Split('<');
+            string a4 = a3[0];
+            return a4;
         }
 
         // GET: GarageOpenner/Create
@@ -384,6 +436,10 @@ namespace GarageOpener.Controllers
             }
             catch (Exception ex)
             {
+                if (ex != null)
+                {
+
+                }
                 // responseFromServer = ex.Message;
             }
             finally
@@ -505,6 +561,39 @@ namespace GarageOpener.Controllers
             Guid temp = Guid.Empty;
             return Guid.TryParse(value, out temp);
         }
+    
+
+
+    private bool updateSetting(string settingName,string settingvalue)
+    {
+            bool returnValue = false;
+        GarageOpener.Database.Setting  setting = new GarageOpener.Database.Setting();
+        GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
+
+            IQueryable<GarageOpener.Database.Setting> temp = from data in context.Settings
+                                                             where data.Name.ToUpper() == settingName.ToUpper()
+                                                             select data;
+
+        try
+        {
+                setting = temp.FirstOrDefault();
+
+            if (setting != null)
+            {
+                    setting.Description = "http://" + settingvalue + ":";
+                    context.SaveChanges();
+                    returnValue = true;
+            }
+        }
+        catch (Exception ex)
+        {
+            if (ex.Message != null)
+            {
+            }
+        }
+
+        return returnValue;
+    }
     }
     #endregion
 
