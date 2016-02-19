@@ -46,69 +46,7 @@ namespace GarageOpener.Controllers
 
         }
 
-        private string GetUserIP()
-        {
-            string ipList = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
-
-            if (!string.IsNullOrEmpty(ipList))
-            {
-                return ipList.Split(',')[0];
-            }
-
-            return Request.ServerVariables["REMOTE_ADDR"].ToString();
-        }
-
-        public bool UpdateazaAdresa(string ip)
-        {
-            bool returnValue = false;
-            string ipDatabase = "";
-            GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
-            try
-            {
-                //string ip = GetPublicIP();
-
-                IPAddress ipA;
-                returnValue = IPAddress.TryParse(ip, out ipA);
-
-                if (returnValue)
-                {
-                    //Update IP Address
-                    ipDatabase = getSetting("RaspiIP");
-                    if (!ipDatabase.Contains(ipA.MapToIPv4().ToString()))
-                    {
-                        returnValue = updateSetting("RaspiIP", ipA.MapToIPv4().ToString());
-                        //Update Database IP
-
-                    }
-                }
-
-            }
-            catch (Exception e)
-            {
-                if (e != null)
-                {
-
-                }
-            }
-
-            return returnValue;
-        }
-
-        public static string GetPublicIP()
-        {
-            string url = "http://checkip.dyndns.org";
-            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
-            System.Net.WebResponse resp = req.GetResponse();
-            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
-            string response = sr.ReadToEnd().Trim();
-            string[] a = response.Split(':');
-            string a2 = a[1].Substring(1);
-            string[] a3 = a2.Split('<');
-            string a4 = a3[0];
-            return a4;
-        }
-
-        // GET: GarageOpenner/Create
+      
         [HttpPost]
         public JsonResult CheckLogin(String value1, String value2)
         {
@@ -291,6 +229,68 @@ namespace GarageOpener.Controllers
 
 
         #region "Support Methods"
+        private string GetUserIP()
+        {
+            string ipList = Request.ServerVariables["HTTP_X_FORWARDED_FOR"];
+
+            if (!string.IsNullOrEmpty(ipList))
+            {
+                return ipList.Split(',')[0];
+            }
+
+            return Request.ServerVariables["REMOTE_ADDR"].ToString();
+        }
+
+        public bool UpdateazaAdresa(string ip)
+        {
+            bool returnValue = false;
+            string ipDatabase = "";
+            GarageOpener.Database.DB_30349_garageEntities context = new GarageOpener.Database.DB_30349_garageEntities();
+            try
+            {
+                //string ip = GetPublicIP();
+
+                IPAddress ipA;
+                returnValue = IPAddress.TryParse(ip, out ipA);
+
+                if (returnValue)
+                {
+                    //Update IP Address
+                    ipDatabase = getSetting("RaspiIP");
+                    if (!ipDatabase.Contains(ipA.MapToIPv4().ToString()))
+                    {
+                        returnValue = updateSetting("RaspiIP", ipA.MapToIPv4().ToString());
+                        //Update Database IP
+
+                    }
+                }
+
+            }
+            catch (Exception e)
+            {
+                if (e != null)
+                {
+
+                }
+            }
+
+            return returnValue;
+        }
+
+        public static string GetPublicIP()
+        {
+            string url = "http://checkip.dyndns.org";
+            System.Net.WebRequest req = System.Net.WebRequest.Create(url);
+            System.Net.WebResponse resp = req.GetResponse();
+            System.IO.StreamReader sr = new System.IO.StreamReader(resp.GetResponseStream());
+            string response = sr.ReadToEnd().Trim();
+            string[] a = response.Split(':');
+            string a2 = a[1].Substring(1);
+            string[] a3 = a2.Split('<');
+            string a4 = a3[0];
+            return a4;
+        }
+
         private CheckStatusResponse OverwriteDoor(String value1)
         {
             CheckStatusResponse returnValue = new CheckStatusResponse();
